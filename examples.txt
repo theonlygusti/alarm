@@ -1,3 +1,4 @@
-time ~time(5)
-timer ~time(5)
-timer ~time(5:10)
+alarm at ~time(5:30)
+wake me up at ~time(5:30)
+alarm in ~time(3)
+wake me up in ~time(3)
