@@ -1,6 +1,10 @@
-import os, json, pipes, time, math
+import os
+import json
+import pipes
+import time
+import math
 
-def secToText(sec):
+def seconds_to_text(sec):
     minute = math.floor(sec / 60)
     second = sec - minute * 60
     if (minute < 1):
@@ -8,27 +12,26 @@ def secToText(sec):
     else:
         return "%s minutes and %s seconds" % (int(minute), int(second))
 
-def post_notification(message, title="Flashlight"):
-    # do string escaping:
+def show_alert(message, title="Flashlight"):
     message = json.dumps(message)
     title = json.dumps(title)
     script = 'display notification {0} with title {1}'.format(message, title)
     os.system("osascript -e {0}".format(pipes.quote(script)))
 
-def playAudio(fileName = "beep.wav", repeat=3):
+def play_alarm(fileName = "beep.wav", repeat=3):
     for i in range(repeat):
         os.system("afplay %s" % fileName)
 
-def notifyAlert(timeout, sound = True):
+def alert_with_sound(timeout, sound = True):
     time.sleep(timeout)
-    post_notification("Timer for %s finished" % secToText(timeout), "Times up!")
+    show_alert("Timer for %s finished" % seconds_to_text(timeout), "Time's up!")
     if sound:
-        playAudio()
+        play_alarm()
 
-def convertToSeconds(s, m=0, h=0, d=0):
+def convert_to_seconds(s, m=0, h=0, d=0):
     return (s + m * 60 + h * 3600 + d * 86400)
 
-def parseTime(timeString):
+def parse_time(timeString):
     try:
         colonIndex = timeString.find(":")
         minuteIndex = timeString.find("m")
@@ -50,17 +53,17 @@ def parseTime(timeString):
             second = timeString
         second = int(second)
         minute = int(minute)
-        return convertToSeconds(second, minute)
+        return convert_to_seconds(second, minute)
     except:
         return -1
 
 def results(fields, original_query):
     time = fields['~time']
-    timeInSecond = parseTime(time)
+    timeInSecond = parse_time(time)
     return {
-        "title": "Set a timer for %s" % secToText(timeInSecond),
+        "title": "Set a timer for %s" % seconds_to_text(timeInSecond),
         "run_args": [timeInSecond],  # ignore for now
     }
 
 def run(time):
-    notifyAlert(time)
+    alert_with_sound(time)
