@@ -1,10 +1,9 @@
 {
-    "name": "timer",
-    "displayName": "Spotlight Timer",
-    "description": "Simple timer with sound notifcations from spotlight",
-    "examples": ["time 32", "timer 2:10", "time 2m1s"],
+    "name": "alarm",
+    "displayName": "Alarm for Spotlight",
+    "description": "Set an alarm from within Spotlight.",
+    "examples": ["alarm at 7:10", "alarm in 20m", "wake me up in 3h30m"],
     "categories": ["Utilities"],
-    "creator_name": "Peter Chan",
-    "creator_url": "https://github.com/PeterKYChan",
-		"credits": "audio files retrived from http://www.freesfx.co.uk"
+    "creator_name": "George Bakewell",
+    "creator_url": "https://github.com/theonlygusti"
 }
