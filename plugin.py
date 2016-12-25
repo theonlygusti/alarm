@@ -31,10 +31,6 @@ def convert_to_seconds(s, m=0, h=0, d=0):
 
 def parse_time_span(time_string):
     """Convert an inputted string, like 3h30m15s, into a duration in seconds."""
-    time_struct = time.mktime(time.localtime())
-    time_delta = datetime.timedelta(0)
-    # when the string matches the pattern defined in the key, parse using the
-    # associated formatting rule.
     format_strings = {
         r"^\d+h\d+m\d+s$": "%Hh%Mm%Ss",
         r"^\d+h\d+m$": "%Hh%Mm",
@@ -49,8 +45,8 @@ def parse_time_span(time_string):
         if pattern.match(time_string):
             time_struct = time.strptime(time_string, value)
             time_delta = datetime.timedelta(hours = time_struct.tm_hour, minutes = time_struct.tm_min, seconds = time_struct.tm_sec)
-            break
-    return time_delta.total_seconds()
+            return time_delta.total_seconds()
+    raise ValueError
 
 def results(fields, original_query):
     time = fields['~time']
@@ -70,7 +66,23 @@ class TestParsingAndFormattingFunctions(unittest.TestCase):
 
     def test_parse_time_span(self):
         """Make sure parse_time_span properly converts a string, formatted like 3h30m30s, into a time duration."""
+        # Testing for normal data
         self.assertEqual(parse_time_span("3h30m"), 12600.0)
         self.assertEqual(parse_time_span("8h30m"), 30600.0)
         self.assertEqual(parse_time_span("1m15s"), 75.0)
         self.assertEqual(parse_time_span("20m"), 1200.0)
+        # Testing extreme data
+        self.assertEqual(parse_time_span("23h59m59s"), 86399.0)
+        self.assertEqual(parse_time_span("0h1m0s"), 60.0)
+        self.assertEqual(parse_time_span("60s"), 60.0)
+        # Testing abnormal data, these should all error
+        with self.assertRaises(ValueError):
+            parse_time_span("120s")
+        with self.assertRaises(ValueError):
+            parse_time_span("five")
+        with self.assertRaises(ValueError):
+            parse_time_span("5")
+        with self.assertRaises(ValueError):
+            parse_time_span("0")
+        with self.assertRaises(ValueError):
+            parse_time_span("30.5s")
