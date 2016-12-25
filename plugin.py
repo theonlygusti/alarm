@@ -63,7 +63,12 @@ def results(fields, original_query):
     return {
         "title": "Set an alarm for %s" % seconds_to_text(timeInSecond),
         "run_args": [timeInSecond],  # ignore for now
-        "html": '<iframe src="http://free.timeanddate.com/clock/i5incat5/n136/szw110/szh110/hbw0/hfc000/cf100/hgr0/fav0/fiv0/mqcfff/mql15/mqw4/mqd94/mhcfff/mhl15/mhw4/mhd94/mmv0/hhcbbb/hmcddd/hsceee" frameborder="0" width="110" height="110"></iframe>',
+        "html": ('<iframe src="http://free.timeanddate.com/'
+                 'clock/i5incat5/n136/szw110/szh110/hbw0/hfc000/'
+                 'cf100/hgr0/fav0/fiv0/mqcfff/mql15/mqw4/mqd94/'
+                 'mhcfff/mhl15/mhw4/mhd94/mmv0/hhcbbb/hmcddd/'
+                 'hsceee" frameborder="0" width="110" height="110">'
+                 '</iframe>'),
         "webview_transparent_background": True
     }
 
