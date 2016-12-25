@@ -1,16 +1,14 @@
-import os
+import datetime
 import json
-import pipes
-import time
 import math
+import os
+import pipes
+import re
+import time
+import unittest
 
-def seconds_to_text(sec):
-    minute = math.floor(sec / 60)
-    second = sec - minute * 60
-    if (minute < 1):
-        return "%s seconds" % int(second)
-    else:
-        return "%s minutes and %s seconds" % (int(minute), int(second))
+def seconds_to_text(seconds):
+    return str(datetime.timedelta(seconds=seconds))
 
 def show_alert(message, title="Flashlight"):
     message = json.dumps(message)
@@ -31,39 +29,48 @@ def alert_with_sound(timeout, sound = True):
 def convert_to_seconds(s, m=0, h=0, d=0):
     return (s + m * 60 + h * 3600 + d * 86400)
 
-def parse_time(timeString):
-    try:
-        colonIndex = timeString.find(":")
-        minuteIndex = timeString.find("m")
-        secondIndex = timeString.find("s")
-        if (colonIndex > -1):
-            minute = timeString[:colonIndex]
-            second = timeString[(colonIndex + 1):]
-        elif (minuteIndex > -1 and secondIndex > -1):
-            minute = timeString[:minuteIndex]
-            second = timeString[(minuteIndex + 1):secondIndex]
-        elif (minuteIndex > -1):
-            minute = timeString[:minuteIndex]
-            second = 0
-        elif (secondIndex > -1):
-            minute = 0
-            second = timeString[:minuteIndex]
-        else:
-            minute = 0
-            second = timeString
-        second = int(second)
-        minute = int(minute)
-        return convert_to_seconds(second, minute)
-    except:
-        return -1
+def parse_time_span(time_string):
+    """Convert an inputted string, like 3h30m15s, into a duration in seconds."""
+    time_struct = time.mktime(time.localtime())
+    time_delta = datetime.timedelta(0)
+    # when the string matches the pattern defined in the key, parse using the
+    # associated formatting rule.
+    format_strings = {
+        r"^\d+h\d+m\d+s$": "%Hh%Mm%Ss",
+        r"^\d+h\d+m$": "%Hh%Mm",
+        r"^\d+h\d+s$": "%Hh%Ss",
+        r"^\d+m\d+s$": "%Mm%Ss",
+        r"^\d+h$": "%Hh",
+        r"^\d+m$": "%Mm",
+        r"^\d+s$": "%Ss"
+        }
+    for key, value in format_strings.items():
+        pattern = re.compile(key)
+        if pattern.match(time_string):
+            time_struct = time.strptime(time_string, value)
+            time_delta = datetime.timedelta(hours = time_struct.tm_hour, minutes = time_struct.tm_min, seconds = time_struct.tm_sec)
+            break
+    return time_delta.total_seconds()
 
 def results(fields, original_query):
     time = fields['~time']
-    timeInSecond = parse_time(time)
+    timeInSecond = parse_time_span(time)
     return {
-        "title": "Set a timer for %s" % seconds_to_text(timeInSecond),
+        "title": "Set an alarm for %s" % seconds_to_text(timeInSecond),
         "run_args": [timeInSecond],  # ignore for now
+        "html": '<iframe src="http://free.timeanddate.com/clock/i5incat5/n136/szw110/szh110/hbw0/hfc000/cf100/hgr0/fav0/fiv0/mqcfff/mql15/mqw4/mqd94/mhcfff/mhl15/mhw4/mhd94/mmv0/hhcbbb/hmcddd/hsceee" frameborder="0" width="110" height="110"></iframe>',
+        "webview_transparent_background": True
     }
 
 def run(time):
     alert_with_sound(time)
+
+class TestParsingAndFormattingFunctions(unittest.TestCase):
+    """Test that the functions which parse strings into times and format times as strings are all working."""
+
+    def test_parse_time_span(self):
+        """Make sure parse_time_span properly converts a string, formatted like 3h30m30s, into a time duration."""
+        self.assertEqual(parse_time_span("3h30m"), 12600.0)
+        self.assertEqual(parse_time_span("8h30m"), 30600.0)
+        self.assertEqual(parse_time_span("1m15s"), 75.0)
+        self.assertEqual(parse_time_span("20m"), 1200.0)
