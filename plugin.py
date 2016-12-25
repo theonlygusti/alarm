@@ -8,8 +8,38 @@ import time
 import unittest
 
 def seconds_to_text(seconds):
-    """Return the user-friendly version of the time duration specified by seconds."""
-    return str(datetime.timedelta(seconds=seconds))
+    """Return the user-friendly version of the time duration specified by seconds.
+    
+    Outputs should resemble:
+        "3 hours and 30 minutes"
+        "20 minutes"
+        "1 minute and 30 seconds"
+        "10 hours, 30 minutes and 10 seconds"
+    """
+    # Special case because it's faster this way
+    if seconds == 0:
+        return "0 seconds"
+    # Need the hours, minutes and seconds individually for putting into string
+    hours = seconds // (60 * 60)
+    hours = int(hours)
+    seconds %= 60 * 60
+    minutes = seconds // 60
+    minutes = int(minutes)
+    seconds %= 60
+    seconds = int(seconds)
+
+    formatted_text = ""
+    if hours > 0:
+        formatted_text += str(hours) + " " + ("hour", "hours")[hours > 1]
+    if minutes > 0:
+        if formatted_text.count(" ") > 0:
+            formatted_text += (" and ", ", ")[seconds > 0]
+        formatted_text += str(minutes) + " " + ("minute", "minutes")[minutes > 1]
+    if seconds > 0:
+        if formatted_text.count(" ") > 0:
+            formatted_text += " and "
+        formatted_text += str(seconds) + " " + ("second", "seconds")[seconds > 1]
+    return formatted_text
 
 def show_alert(message, title="Flashlight"):
     """Display a macOS notification."""
@@ -100,3 +130,17 @@ class TestParsingAndFormattingFunctions(unittest.TestCase):
             parse_time_span("0")
         with self.assertRaises(ValueError):
             parse_time_span("30.5s")
+
+    def test_seconds_to_text(self):
+        """Make sure seconds_to_text formats a string into the correct human-readable structure."""
+        # Testing with normal inputs
+        self.assertEqual(seconds_to_text(18000), "5 hours")
+        self.assertEqual(seconds_to_text(12600), "3 hours and 30 minutes")
+        self.assertEqual(seconds_to_text(1200), "20 minutes")
+        self.assertEqual(seconds_to_text(60), "1 minute")
+        # Testing with extreme inputs
+        self.assertEqual(seconds_to_text(0), "0 seconds")
+        self.assertEqual(seconds_to_text(86399), "23 hours, 59 minutes and 59 seconds")
+        # Testing with invalid inputs
+        with self.assertRaises(TypeError):
+            seconds_to_text("What's a string doing here?")
