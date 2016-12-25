@@ -83,7 +83,7 @@ def parse_time_span(time_string):
         if pattern.match(time_string):
             time_struct = time.strptime(time_string, value)
             time_delta = datetime.timedelta(hours = time_struct.tm_hour, minutes = time_struct.tm_min, seconds = time_struct.tm_sec)
-            return time_delta.total_seconds()
+            return round(time_delta.total_seconds())
     # None of the patterns matched, raise an exception so that calling code can handle input format errors
     raise ValueError
 
@@ -111,14 +111,14 @@ class TestParsingAndFormattingFunctions(unittest.TestCase):
     def test_parse_time_span(self):
         """Make sure parse_time_span properly converts a string, formatted like 3h30m30s, into a time duration."""
         # Testing for normal data
-        self.assertEqual(parse_time_span("3h30m"), 12600.0)
-        self.assertEqual(parse_time_span("8h30m"), 30600.0)
-        self.assertEqual(parse_time_span("1m15s"), 75.0)
-        self.assertEqual(parse_time_span("20m"), 1200.0)
+        self.assertEqual(parse_time_span("3h30m"), 12600)
+        self.assertEqual(parse_time_span("8h30m"), 30600)
+        self.assertEqual(parse_time_span("1m15s"), 75)
+        self.assertEqual(parse_time_span("20m"), 1200)
         # Testing extreme data
-        self.assertEqual(parse_time_span("23h59m59s"), 86399.0)
-        self.assertEqual(parse_time_span("0h1m0s"), 60.0)
-        self.assertEqual(parse_time_span("60s"), 60.0)
+        self.assertEqual(parse_time_span("23h59m59s"), 86399)
+        self.assertEqual(parse_time_span("0h1m0s"), 60)
+        self.assertEqual(parse_time_span("60s"), 60)
         # Testing abnormal data, these should all error
         with self.assertRaises(ValueError):
             parse_time_span("120s")
