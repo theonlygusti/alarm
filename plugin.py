@@ -8,25 +8,30 @@ import time
 import unittest
 
 def seconds_to_text(seconds):
+    """Return the user-friendly version of the time duration specified by seconds."""
     return str(datetime.timedelta(seconds=seconds))
 
 def show_alert(message, title="Flashlight"):
+    """Display a macOS notification."""
     message = json.dumps(message)
     title = json.dumps(title)
     script = 'display notification {0} with title {1}'.format(message, title)
     os.system("osascript -e {0}".format(pipes.quote(script)))
 
 def play_alarm(fileName = "beep.wav", repeat=3):
+    """Repeat the sound specified to mimic an alarm."""
     for i in range(repeat):
         os.system("afplay %s" % fileName)
 
 def alert_with_sound(timeout, sound = True):
+    """After timeout seconds, show an alert and play the alarm sound."""
     time.sleep(timeout)
     show_alert("Timer for %s finished" % seconds_to_text(timeout), "Time's up!")
     if sound:
         play_alarm()
 
 def convert_to_seconds(s, m=0, h=0, d=0):
+    """Convert seconds, minutes, hours and days to seconds."""
     return (s + m * 60 + h * 3600 + d * 86400)
 
 def parse_time_span(time_string):
@@ -40,12 +45,16 @@ def parse_time_span(time_string):
         r"^\d+m$": "%Mm",
         r"^\d+s$": "%Ss"
         }
+    # We need to convert a string like "3h30m" into a time.struct_time, I thought the easiest way
+    # would be to loop through a dictionary with keys of patterns, matching separately cases like
+    # "1h15m", "5s", "20m", etc. and then applying the formatting rule within that key's value
     for key, value in format_strings.items():
         pattern = re.compile(key)
         if pattern.match(time_string):
             time_struct = time.strptime(time_string, value)
             time_delta = datetime.timedelta(hours = time_struct.tm_hour, minutes = time_struct.tm_min, seconds = time_struct.tm_sec)
             return time_delta.total_seconds()
+    # None of the patterns matched, raise an exception so that calling code can handle input format errors
     raise ValueError
 
 def results(fields, original_query):
