@@ -82,7 +82,7 @@ def results(fields, original_query):
         "webview_transparent_background": True
     }
 
-def alert_after_timespan(timeout, sound = True):
+def alert_after_timeout(timeout, sound = True):
     """After timeout seconds, show an alert and play the alarm sound."""
     time.sleep(timeout)
     show_alert("Timer for %s finished" % seconds_to_text(timeout), "Time's up!")
@@ -90,7 +90,7 @@ def alert_after_timespan(timeout, sound = True):
         play_alarm()
 
 def run(seconds):
-    alert_after_timespan(seconds)
+    alert_after_timeout(seconds)
 
 class TestParsingAndFormattingFunctions(unittest.TestCase):
     """Test that the functions which parse strings into times and format times as strings are all working."""
