@@ -41,11 +41,11 @@ def seconds_to_text(seconds):
         formatted_text += str(seconds) + " " + ("second", "seconds")[seconds > 1]
     return formatted_text
 
-def show_alert(message, title="Flashlight"):
+def show_alert(message="Alarm", title="Flashlight"):
     """Display a macOS notification."""
     message = json.dumps(message)
     title = json.dumps(title)
-    script = 'display notification {0} with title {1}'.format(message, title)
+    script = "display notification {0} with title {1}".format(message, title)
     os.system("osascript -e {0}".format(pipes.quote(script)))
 
 def play_alarm(fileName = "beep.wav", repeat=3):
@@ -68,25 +68,26 @@ def parse_time_span(time_string):
     return round(total_seconds)
 
 def results(fields, original_query):
-    time = fields['~time']
+    time = fields["~time"]
     seconds = parse_time_span(time)
+    reason = fields["~reason"]
     with open("results.html") as html:
         return {
             "title": "Set an alarm for %s" % seconds_to_text(seconds),
-            "run_args": [seconds],
+            "run_args": [seconds, reason],
             "html": html.read(),
             "webview_transparent_background": True
             }
 
-def alert_after_timeout(timeout, sound = True):
+def alert_after_timeout(timeout, reason, sound = True):
     """After timeout seconds, show an alert and play the alarm sound."""
     time.sleep(timeout)
-    show_alert("Timer for %s finished" % seconds_to_text(timeout), "Time's up!")
+    show_alert(reason, "Time's up!")
     if sound:
         play_alarm()
 
-def run(seconds):
-    alert_after_timeout(seconds)
+def run(seconds, reason):
+    alert_after_timeout(seconds, reason)
 
 class TestParsingAndFormattingFunctions(unittest.TestCase):
     """Test that the functions which parse strings into times and format times as strings are all working."""
