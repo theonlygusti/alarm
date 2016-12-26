@@ -66,26 +66,13 @@ def convert_to_seconds(s, m=0, h=0, d=0):
 
 def parse_time_span(time_string):
     """Convert an inputted string, like 3h30m15s, into a duration in seconds."""
-    format_strings = {
-        r"^\d+h\d+m\d+s$": "%Hh%Mm%Ss",
-        r"^\d+h\d+m$": "%Hh%Mm",
-        r"^\d+h\d+s$": "%Hh%Ss",
-        r"^\d+m\d+s$": "%Mm%Ss",
-        r"^\d+h$": "%Hh",
-        r"^\d+m$": "%Mm",
-        r"^\d+s$": "%Ss"
-        }
-    # We need to convert a string like "3h30m" into a time.struct_time, I thought the easiest way
-    # would be to loop through a dictionary with keys of patterns, matching separately cases like
-    # "1h15m", "5s", "20m", etc. and then applying the formatting rule within that key's value
-    for key, value in format_strings.items():
-        pattern = re.compile(key)
-        if pattern.match(time_string):
-            time_struct = time.strptime(time_string, value)
-            time_delta = datetime.timedelta(hours = time_struct.tm_hour, minutes = time_struct.tm_min, seconds = time_struct.tm_sec)
-            return round(time_delta.total_seconds())
-    # None of the patterns matched, raise an exception so that calling code can handle input format errors
-    raise ValueError
+    pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
+    (hours, minutes, seconds) = pattern.match(time_string).groups()
+    hours = 0 if hours is None else int(hours)
+    minutes = 0 if minutes is None else int(minutes)
+    seconds = 0 if seconds is None else int(seconds)
+    total_seconds = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds).total_seconds()
+    return round(total_seconds)
 
 def results(fields, original_query):
     time = fields['~time']
@@ -120,16 +107,12 @@ class TestParsingAndFormattingFunctions(unittest.TestCase):
         self.assertEqual(parse_time_span("0h1m0s"), 60)
         self.assertEqual(parse_time_span("60s"), 60)
         # Testing abnormal data, these should all error
-        with self.assertRaises(ValueError):
-            parse_time_span("120s")
-        with self.assertRaises(ValueError):
-            parse_time_span("five")
-        with self.assertRaises(ValueError):
-            parse_time_span("5")
-        with self.assertRaises(ValueError):
-            parse_time_span("0")
-        with self.assertRaises(ValueError):
-            parse_time_span("30.5s")
+        with self.assertRaises(AttributeError):
+            parse_time_span("five o-clock")
+        with self.assertRaises(AttributeError):
+            parse_time_span("1.5s")
+        with self.assertRaises(AttributeError):
+            parse_time_span("25")
 
     def test_seconds_to_text(self):
         """Make sure seconds_to_text formats a string into the correct human-readable structure."""
