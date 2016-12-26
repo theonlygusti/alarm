@@ -58,7 +58,7 @@ def convert_to_seconds(s, m=0, h=0, d=0):
     return (s + m * 60 + h * 3600 + d * 86400)
 
 def parse_time_span(time_string):
-    """Convert an inputted string, like 3h30m15s, into a duration in seconds."""
+    """Convert an inputted string representing a timespan, like 3h30m15s, into a duration in seconds."""
     pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
     (hours, minutes, seconds) = pattern.match(time_string).groups()
     hours = 0 if hours is None else int(hours)
@@ -70,17 +70,13 @@ def parse_time_span(time_string):
 def results(fields, original_query):
     time = fields['~time']
     seconds = parse_time_span(time)
-    return {
-        "title": "Set an alarm for %s" % seconds_to_text(seconds),
-        "run_args": [seconds],
-        "html": ('<iframe src="http://free.timeanddate.com/'
-                 'clock/i5incat5/n136/szw110/szh110/hbw0/hfc000/'
-                 'cf100/hgr0/fav0/fiv0/mqcfff/mql15/mqw4/mqd94/'
-                 'mhcfff/mhl15/mhw4/mhd94/mmv0/hhcbbb/hmcddd/'
-                 'hsceee" frameborder="0" width="110" height="110">'
-                 '</iframe>'),
-        "webview_transparent_background": True
-    }
+    with open("results.html") as html:
+        return {
+            "title": "Set an alarm for %s" % seconds_to_text(seconds),
+            "run_args": [seconds],
+            "html": html.read(),
+            "webview_transparent_background": True
+            }
 
 def alert_after_timeout(timeout, sound = True):
     """After timeout seconds, show an alert and play the alarm sound."""
