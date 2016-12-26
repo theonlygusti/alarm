@@ -53,13 +53,6 @@ def play_alarm(fileName = "beep.wav", repeat=3):
     for i in range(repeat):
         os.system("afplay %s" % fileName)
 
-def alert_with_sound(timeout, sound = True):
-    """After timeout seconds, show an alert and play the alarm sound."""
-    time.sleep(timeout)
-    show_alert("Timer for %s finished" % seconds_to_text(timeout), "Time's up!")
-    if sound:
-        play_alarm()
-
 def convert_to_seconds(s, m=0, h=0, d=0):
     """Convert seconds, minutes, hours and days to seconds."""
     return (s + m * 60 + h * 3600 + d * 86400)
@@ -76,10 +69,10 @@ def parse_time_span(time_string):
 
 def results(fields, original_query):
     time = fields['~time']
-    timeInSecond = parse_time_span(time)
+    seconds = parse_time_span(time)
     return {
-        "title": "Set an alarm for %s" % seconds_to_text(timeInSecond),
-        "run_args": [timeInSecond],  # ignore for now
+        "title": "Set an alarm for %s" % seconds_to_text(seconds),
+        "run_args": [seconds],
         "html": ('<iframe src="http://free.timeanddate.com/'
                  'clock/i5incat5/n136/szw110/szh110/hbw0/hfc000/'
                  'cf100/hgr0/fav0/fiv0/mqcfff/mql15/mqw4/mqd94/'
@@ -89,8 +82,15 @@ def results(fields, original_query):
         "webview_transparent_background": True
     }
 
-def run(time):
-    alert_with_sound(time)
+def alert_after_timespan(timeout, sound = True):
+    """After timeout seconds, show an alert and play the alarm sound."""
+    time.sleep(timeout)
+    show_alert("Timer for %s finished" % seconds_to_text(timeout), "Time's up!")
+    if sound:
+        play_alarm()
+
+def run(seconds):
+    alert_after_timespan(seconds)
 
 class TestParsingAndFormattingFunctions(unittest.TestCase):
     """Test that the functions which parse strings into times and format times as strings are all working."""
