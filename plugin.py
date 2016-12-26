@@ -70,7 +70,7 @@ def parse_time_span(time_string):
 def results(fields, original_query):
     time = fields["~time"]
     seconds = parse_time_span(time)
-    reason = fields["~reason"]
+    reason = fields["~reason"] if "~reason" in fields else "Alarm"
     with open("results.html") as html:
         return {
             "title": "Set an alarm for %s" % seconds_to_text(seconds),
