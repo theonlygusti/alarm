@@ -1,4 +1,2 @@
-alarm at ~time(7:30) ~reason(wake up)
-alarm at ~time(7:30)
-alarm in ~time(3h30m) ~reason(core sleep finished)
-alarm in ~time(20m)
+alarm at ~arguments(7:30 time to get up)
+alarm in ~arguments(20m)

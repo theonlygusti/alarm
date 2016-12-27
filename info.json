@@ -2,7 +2,7 @@
     "name": "alarm",
     "displayName": "Alarm for Spotlight",
     "description": "Set an alarm from within Spotlight.",
-    "examples": ["alarm at 7:10", "alarm in 20m", "wake me up in 3h30m"],
+    "examples": ["alarm at 7:10 time to get up", "alarm in 20m", "alarm in 3h30m core sleep finished"],
     "categories": ["Utilities"],
     "creator_name": "George Bakewell",
     "creator_url": "https://github.com/theonlygusti"
