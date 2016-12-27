@@ -41,11 +41,10 @@ def seconds_to_text(seconds):
         formatted_text += str(seconds) + " " + ("second", "seconds")[seconds > 1]
     return formatted_text
 
-def show_alert(message="Alarm", title="Flashlight"):
-    """Display a macOS notification."""
+def show_alert(message="Time's up!"):
+    """Display a macOS alert."""
     message = json.dumps(message)
-    title = json.dumps(title)
-    script = "display notification {0} with title {1}".format(message, title)
+    script = "display dialog {0}".format(message)
     os.system("osascript -e {0}".format(pipes.quote(script)))
 
 def play_alarm(fileName = "beep.wav", repeat=3):
@@ -70,7 +69,7 @@ def parse_time_span(time_string):
 def results(fields, original_query):
     time = fields["~time"]
     seconds = parse_time_span(time)
-    reason = fields["~reason"] if "~reason" in fields else "Alarm"
+    reason = fields["~reason"] if "~reason" in fields else "Time's up!"
     with open("results.html") as html:
         return {
             "title": "Set an alarm for %s" % seconds_to_text(seconds),
@@ -82,7 +81,7 @@ def results(fields, original_query):
 def alert_after_timeout(timeout, reason, sound = True):
     """After timeout seconds, show an alert and play the alarm sound."""
     time.sleep(timeout)
-    show_alert(reason, "Time's up!")
+    show_alert(reason)
     if sound:
         play_alarm()
 
