@@ -1,2 +1,3 @@
 alarm at ~arguments(7:30 time to get up)
 alarm in ~arguments(20m)
+alarm for ~arguments(5:30PM)
