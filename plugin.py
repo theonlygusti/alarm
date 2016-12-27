@@ -46,8 +46,7 @@ def seconds_to_text(seconds):
 def show_alert(message="Time's up!"):
     """Display a macOS dialog."""
     message = json.dumps(message)
-    script = "display dialog {0}".format(message)
-    os.system("osascript -e {0}".format(pipes.quote(script)))
+    os.system("osascript dialog.scpt {0}".format(message))
 
 def play_alarm(fileName = "beep.wav", repeat=3):
     """Repeat the sound specified to mimic an alarm."""
