@@ -67,11 +67,48 @@ def parse_time_span(time_string):
     total_seconds = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds).total_seconds()
     return round(total_seconds)
 
+def parse_absolute_time(time_string):
+    """Convert an inputted string like '7:30PM' or '22:00' into the number of seconds from now until
+    that time. If the time is earlier in the day than the current time, take the number of seconds
+    until that time occurrs tomorrow.
+    """
+    # As there are so many possible input formats, "19:30", "10", "6:00AM", etc. I thought a sensible
+    # way to parse the inputs would be to use a dictionary which pairs patterns with parsing rules.
+    time = None
+    formats = {
+        "^\d{1,2}$": "%H",
+        "^\d{1,2}(AM|PM)$": "%I%p",
+        "^\d{1,2}:\d{2}$": "%H:%M",
+        "^\d{1,2}:\d{2}(AM|PM)$": "%I:%M%p"
+        }
+    for key, value in formats.items():
+        if re.match(key, time_string, re.IGNORECASE):
+            time = datetime.datetime.strptime(time_string, value).time()
+    if time is None:
+        # need to let the caller know that the time wasn't in a recognised format
+        raise ValueError
+    time = datetime.datetime.combine(datetime.datetime.today().date(), time)
+    if datetime.datetime.now() > time:
+        # it's likely the user wants to set an alarm for tomorrow
+        time = time + datetime.timedelta(days = 1)
+    total_seconds = (time - datetime.datetime.now()).total_seconds()
+    return round(total_seconds)
+
+def parse_time(time_string):
+    """Convert an inputted time, which could be either a duration or an absolute time, into
+    the number of seconds that time represents, or the number of seconds until that time.
+    """
+    pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
+    if pattern.match(time_string):
+        return parse_time_span(time_string)
+    else:
+        return parse_absolute_time(time_string)
+
 def results(fields, original_query):
     arguments = fields["~arguments"].split(" ")
     time = arguments[0]
-    seconds = parse_time_span(time)
-    message = " ".join(arguments[1:]) or "Flashlight alarm"
+    seconds = parse_time(time)
+    message = " ".join(arguments[1:]) or "%s alarm" % (time)
     with open("results.html") as html:
         return {
             "title": "Set an alarm for %s" % seconds_to_text(seconds),
