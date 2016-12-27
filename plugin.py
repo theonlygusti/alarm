@@ -4,6 +4,7 @@ import math
 import os
 import pipes
 import re
+import signal
 import subprocess
 import time
 import unittest
@@ -88,7 +89,7 @@ def alert_after_timeout(timeout, reason, sound = True):
     # show_alert is synchronous, it must be closed before the script continues
     show_alert(reason)
     if process is not None:
-        process.kill()
+        os.killpg(os.getpgid(process.pid), signal.SIGINT)
 
 def run(seconds, reason):
     alert_after_timeout(seconds, reason)
