@@ -76,24 +76,24 @@ def results(fields, original_query):
     with open("results.html") as html:
         return {
             "title": "Set an alarm for %s" % seconds_to_text(seconds),
-            "run_args": [seconds, reason],
+            "run_args": [seconds, message],
             "html": html.read(),
             "webview_transparent_background": True
             }
 
-def alert_after_timeout(timeout, reason, sound = True):
+def alert_after_timeout(timeout, message, sound = True):
     """After timeout seconds, show an alert and play the alarm sound."""
     time.sleep(timeout)
     process = None
     if sound:
         process = play_alarm()
     # show_alert is synchronous, it must be closed before the script continues
-    show_alert(reason)
+    show_alert(message)
     if process is not None:
         os.killpg(os.getpgid(process.pid), signal.SIGINT)
 
-def run(seconds, reason):
-    alert_after_timeout(seconds, reason)
+def run(seconds, message):
+    alert_after_timeout(seconds, message)
 
 class TestParsingAndFormattingFunctions(unittest.TestCase):
     """Test that the functions which parse strings into times and format times as strings are all working."""
