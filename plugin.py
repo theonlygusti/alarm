@@ -43,7 +43,7 @@ def seconds_to_text(seconds):
         formatted_text += str(seconds) + " " + ("second", "seconds")[seconds > 1]
     return formatted_text
 
-def show_alert(message="Time's up!"):
+def show_alert(message="Flashlight alarm"):
     """Display a macOS dialog."""
     message = json.dumps(message)
     os.system("osascript dialog.scpt {0}".format(message))
@@ -71,7 +71,7 @@ def results(fields, original_query):
     arguments = fields["~arguments"].split(" ")
     time = arguments[0]
     seconds = parse_time_span(time)
-    message = " ".join(arguments[1:]) or "Time's up!"
+    message = " ".join(arguments[1:]) or "Flashlight alarm"
     with open("results.html") as html:
         return {
             "title": "Set an alarm for %s" % seconds_to_text(seconds),
