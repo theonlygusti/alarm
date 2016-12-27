@@ -4,7 +4,6 @@ import math
 import os
 import pipes
 import re
-import signal
 import subprocess
 import time
 import unittest
@@ -51,7 +50,7 @@ def show_alert(message="Time's up!"):
 
 def play_alarm(fileName = "beep.wav", repeat=3):
     """Repeat the sound specified to mimic an alarm."""
-    process = subprocess.Popen("exec >(while :; do afplay %s ; done)" % fileName, shell=True, executable='/bin/bash')
+    process = subprocess.Popen("while :; do afplay %s ; done" % fileName, shell=True, executable='/bin/bash')
     return process
 
 def convert_to_seconds(s, m=0, h=0, d=0):
@@ -89,7 +88,7 @@ def alert_after_timeout(timeout, reason, sound = True):
     # show_alert is synchronous, it must be closed before the script continues
     show_alert(reason)
     if process is not None:
-        os.kill(process.pid, signal.SIGINT)
+        process.kill()
 
 def run(seconds, reason):
     alert_after_timeout(seconds, reason)
