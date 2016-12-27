@@ -4,6 +4,8 @@ import math
 import os
 import pipes
 import re
+import signal
+import subprocess
 import time
 import unittest
 
@@ -42,15 +44,15 @@ def seconds_to_text(seconds):
     return formatted_text
 
 def show_alert(message="Time's up!"):
-    """Display a macOS alert."""
+    """Display a macOS dialog."""
     message = json.dumps(message)
     script = "display dialog {0}".format(message)
     os.system("osascript -e {0}".format(pipes.quote(script)))
 
 def play_alarm(fileName = "beep.wav", repeat=3):
     """Repeat the sound specified to mimic an alarm."""
-    for i in range(repeat):
-        os.system("afplay %s" % fileName)
+    process = subprocess.Popen("exec >(while :; do afplay %s ; done)" % fileName, shell=True, executable='/bin/bash')
+    return process
 
 def convert_to_seconds(s, m=0, h=0, d=0):
     """Convert seconds, minutes, hours and days to seconds."""
@@ -81,9 +83,13 @@ def results(fields, original_query):
 def alert_after_timeout(timeout, reason, sound = True):
     """After timeout seconds, show an alert and play the alarm sound."""
     time.sleep(timeout)
-    show_alert(reason)
+    process = None
     if sound:
-        play_alarm()
+        process = play_alarm()
+    # show_alert is synchronous, it must be closed before the script continues
+    show_alert(reason)
+    if process is not None:
+        os.kill(process.pid, signal.SIGINT)
 
 def run(seconds, reason):
     alert_after_timeout(seconds, reason)
