@@ -48,10 +48,10 @@ def show_alert(message="Flashlight alarm"):
     message = json.dumps(message)
     os.system("osascript dialog.scpt {0}".format(message))
 
-def play_alarm(fileName = "beep.wav", repeat=3):
+process = None
+def play_alarm(file_name = "beep.wav", repeat=3):
     """Repeat the sound specified to mimic an alarm."""
-    process = subprocess.Popen("while :; do afplay %s ; done" % fileName, shell=True, executable='/bin/bash')
-    return process
+    process = subprocess.Popen(['sh', '-c', 'while :; do afplay "$1"; done', '_', file_name], shell=False)
 
 def convert_to_seconds(s, m=0, h=0, d=0):
     """Convert seconds, minutes, hours and days to seconds."""
@@ -94,35 +94,51 @@ def parse_absolute_time(time_string):
     total_seconds = (time - datetime.datetime.now()).total_seconds()
     return round(total_seconds)
 
-def parse_time(time_string):
-    """Convert an inputted time, which could be either a duration or an absolute time, into
-    the number of seconds that time represents, or the number of seconds until that time.
-    """
-    pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
-    if pattern.match(time_string):
-        return parse_time_span(time_string)
-    else:
-        return parse_absolute_time(time_string)
-
 def results(fields, original_query):
     arguments = fields["~arguments"].split(" ")
     time = arguments[0]
-    seconds = parse_time(time)
-    message = " ".join(arguments[1:]) or "%s alarm" % (time)
+    message = " ".join(arguments[1:])
     with open("results.html") as html:
-        return {
-            "title": "Set an alarm for %s" % seconds_to_text(seconds),
-            "run_args": [seconds, message],
-            "html": html.read(),
-            "webview_transparent_background": True
-            }
+        # which input format is the user trying to use?
+        pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
+        if pattern.match(time):
+            seconds = 0
+            try:
+                seconds = parse_time_span(time)
+            except AttributeError:
+                return {
+                    "title": "Don't understand.",
+                    "run_args": [],
+                    "html": "Make sure your input is formatted properly.",
+                    "webview_transparent_background": True
+                    }
+            return {
+                "title": "%s in %s" % (message or "Alarm", seconds_to_text(seconds)),
+                "run_args": [seconds, message or "%s alarm" % seconds_to_text(seconds)],
+                "html": html.read(),
+                "webview_transparent_background": True
+                }
+        else:
+            try:
+                return {
+                    "title": "Set an alarm for %s" % time,
+                    "run_args": [parse_absolute_time(time), message or "%s alarm" % (time)],
+                    "html": html.read(),
+                    "webview_transparent_background": True
+                    }
+            except ValueError:
+                return {
+                    "title": "Don't understand.",
+                    "run_args": [],
+                    "html": "Make sure your input is formatted properly.",
+                    "webview_transparent_background": True
+                    }
 
 def alert_after_timeout(timeout, message, sound = True):
     """After timeout seconds, show an alert and play the alarm sound."""
     time.sleep(timeout)
-    process = None
     if sound:
-        process = play_alarm()
+        play_alarm()
     # show_alert is synchronous, it must be closed before the script continues
     show_alert(message)
     if process is not None:
