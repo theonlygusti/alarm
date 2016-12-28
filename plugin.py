@@ -3,7 +3,6 @@ import json
 import math
 import os
 import pipes
-import pyaudio
 import re
 import signal
 import subprocess
@@ -56,23 +55,15 @@ def show_alert(message="Flashlight alarm"):
 
 def play_alarm(file_name = "beep.wav"):
     """Repeat the sound specified to mimic an alarm."""
-    chunk = 1024
-    f = wave.open(file_name, "rb")
-    p = pyaudio.PyAudio()
-    stream = p.open(format = p.get_format_from_width(f.getsampwidth()),
-            channels = f.getnchannels(),
-            rate = f.getframerate(),
-            output = True)
-    while not stop_audio:
-        f.rewind()
-        data = f.readframes(chunk)
-        while data and not stop_audio:
-            stream.write(data)
-            data = f.readframes(chunk)
-
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
+    global stop_sound
+    while not stop_sound:
+        process = subprocess.Popen(["afplay", file_name])
+        while not stop_sound:
+            if process.poll():
+                break
+            time.sleep(0.1)
+        if stop_sound:
+            process.kill()
 
 def convert_to_seconds(s, m=0, h=0, d=0):
     """Convert seconds, minutes, hours and days to seconds."""
@@ -160,15 +151,15 @@ def alert_after_timeout(timeout, message, sound = True):
     time.sleep(timeout)
     process = None
     if sound:
-        play_alarm()
+        thread = threading.Thread(target=play_alarm)
+        thread.start()
     # show_alert is synchronous, it must be closed before the script continues
     exit_status = show_alert(message)
 
     global stop_sound
-    stop_sound = True
-    if process:
-        os.kill(process.pid, signal.SIGINT)
-        process.kill()
+    if sound:
+        stop_sound = True
+        thread.join()
     show_alert(exit_status)
 
 def run(seconds, message):
