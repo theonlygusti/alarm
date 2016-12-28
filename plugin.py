@@ -1,15 +1,11 @@
 import datetime
 import json
-import math
 import os
-import pipes
 import re
-import signal
 import subprocess
 import threading
 import time
 import unittest
-import wave
 
 stop_audio = False
 
