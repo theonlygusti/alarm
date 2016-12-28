@@ -51,7 +51,6 @@ def show_alert(message="Flashlight alarm"):
 
 def play_alarm(file_name = "beep.wav"):
     """Repeat the sound specified to mimic an alarm."""
-    global stop_sound
     while not stop_sound:
         process = subprocess.Popen(["afplay", file_name])
         while not stop_sound:
