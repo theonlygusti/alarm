@@ -45,13 +45,14 @@ def seconds_to_text(seconds):
 
 def show_alert(message="Flashlight alarm"):
     """Display a macOS dialog."""
-    message = json.dumps(message)
-    os.system("osascript dialog.scpt {0}".format(message))
+    message = json.dumps(str(message))
+    exit_status = os.system("osascript dialog.scpt {0}".format(message))
+    return exist_status
 
-process = None
 def play_alarm(file_name = "beep.wav", repeat=3):
     """Repeat the sound specified to mimic an alarm."""
     process = subprocess.Popen(['sh', '-c', 'while :; do afplay "$1"; done', '_', file_name], shell=False)
+    return process
 
 def convert_to_seconds(s, m=0, h=0, d=0):
     """Convert seconds, minutes, hours and days to seconds."""
@@ -138,11 +139,13 @@ def alert_after_timeout(timeout, message, sound = True):
     """After timeout seconds, show an alert and play the alarm sound."""
     time.sleep(timeout)
     if sound:
-        play_alarm()
+        process = play_alarm()
     # show_alert is synchronous, it must be closed before the script continues
-    show_alert(message)
+    exit_status = show_alert(message)
     if process is not None:
         os.killpg(os.getpgid(process.pid), signal.SIGINT)
+        process.kill()
+    show_alert(exit_status)
 
 def run(seconds, message):
     alert_after_timeout(seconds, message)
