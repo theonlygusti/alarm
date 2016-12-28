@@ -43,23 +43,6 @@ def seconds_to_text(seconds):
         formatted_text += str(seconds) + " " + ("second", "seconds")[seconds > 1]
     return formatted_text
 
-def show_alert(message="Flashlight alarm"):
-    """Display a macOS dialog."""
-    message = json.dumps(str(message))
-    exit_status = os.system("osascript dialog.scpt {0}".format(message))
-    return exist_status
-
-def play_alarm(file_name = "beep.wav"):
-    """Repeat the sound specified to mimic an alarm."""
-    while not stop_sound:
-        process = subprocess.Popen(["afplay", file_name])
-        while not stop_sound:
-            if process.poll():
-                break
-            time.sleep(0.1)
-        if stop_sound:
-            process.kill()
-
 def convert_to_seconds(s, m=0, h=0, d=0):
     """Convert seconds, minutes, hours and days to seconds."""
     return (s + m * 60 + h * 3600 + d * 86400)
@@ -101,6 +84,35 @@ def parse_absolute_time(time_string):
     total_seconds = (time - datetime.datetime.now()).total_seconds()
     return round(total_seconds)
 
+def show_alert(message="Flashlight alarm"):
+    """Display a macOS dialog."""
+    message = json.dumps(str(message))
+    os.system("osascript dialog.scpt {0}".format(message))
+
+def play_alarm(file_name = "beep.wav"):
+    """Repeat the sound specified to mimic an alarm."""
+    while not stop_sound:
+        process = subprocess.Popen(["afplay", file_name], shell=False)
+        while not stop_sound:
+            if process.poll():
+                break
+            time.sleep(0.1)
+        if stop_sound:
+            process.kill()
+
+def alert_after_timeout(timeout, message):
+    """After timeout seconds, show an alert and play the alarm sound."""
+    global stop_sound
+    time.sleep(timeout)
+    process = None
+    thread = threading.Thread(target=play_alarm)
+    thread.start()
+    # show_alert is synchronous, it must be closed before the script continues
+    show_alert(message)
+
+    stop_sound = True
+    thread.join()
+
 def results(fields, original_query):
     arguments = fields["~arguments"].split(" ")
     time = arguments[0]
@@ -140,22 +152,6 @@ def results(fields, original_query):
                     "html": "Make sure your input is formatted properly.",
                     "webview_transparent_background": True
                     }
-
-def alert_after_timeout(timeout, message, sound = True):
-    """After timeout seconds, show an alert and play the alarm sound."""
-    time.sleep(timeout)
-    process = None
-    if sound:
-        thread = threading.Thread(target=play_alarm)
-        thread.start()
-    # show_alert is synchronous, it must be closed before the script continues
-    exit_status = show_alert(message)
-
-    global stop_sound
-    if sound:
-        stop_sound = True
-        thread.join()
-    show_alert(exit_status)
 
 def run(seconds, message):
     alert_after_timeout(seconds, message)
