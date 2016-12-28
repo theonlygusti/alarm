@@ -3,11 +3,16 @@ import json
 import math
 import os
 import pipes
+import pyaudio
 import re
 import signal
 import subprocess
+import threading
 import time
 import unittest
+import wave
+
+stop_audio = False
 
 def seconds_to_text(seconds):
     """Return the user-friendly version of the time duration specified by seconds.
@@ -49,10 +54,25 @@ def show_alert(message="Flashlight alarm"):
     exit_status = os.system("osascript dialog.scpt {0}".format(message))
     return exist_status
 
-def play_alarm(file_name = "beep.wav", repeat=3):
+def play_alarm(file_name = "beep.wav"):
     """Repeat the sound specified to mimic an alarm."""
-    process = subprocess.Popen(['sh', '-c', 'while :; do afplay "$1"; done', '_', file_name], shell=False)
-    return process
+    chunk = 1024
+    f = wave.open(file_name, "rb")
+    p = pyaudio.PyAudio()
+    stream = p.open(format = p.get_format_from_width(f.getsampwidth()),
+            channels = f.getnchannels(),
+            rate = f.getframerate(),
+            output = True)
+    while not stop_audio:
+        f.rewind()
+        data = f.readframes(chunk)
+        while data and not stop_audio:
+            stream.write(data)
+            data = f.readframes(chunk)
+
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
 
 def convert_to_seconds(s, m=0, h=0, d=0):
     """Convert seconds, minutes, hours and days to seconds."""
@@ -138,12 +158,16 @@ def results(fields, original_query):
 def alert_after_timeout(timeout, message, sound = True):
     """After timeout seconds, show an alert and play the alarm sound."""
     time.sleep(timeout)
+    process = None
     if sound:
-        process = play_alarm()
+        play_alarm()
     # show_alert is synchronous, it must be closed before the script continues
     exit_status = show_alert(message)
-    if process is not None:
-        os.killpg(os.getpgid(process.pid), signal.SIGINT)
+
+    global stop_sound
+    stop_sound = True
+    if process:
+        os.kill(process.pid, signal.SIGINT)
         process.kill()
     show_alert(exit_status)
 
