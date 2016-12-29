@@ -43,10 +43,6 @@ def seconds_to_text(seconds):
         formatted_text += str(seconds) + " " + ("second", "seconds")[seconds > 1]
     return formatted_text
 
-def convert_to_seconds(s, m=0, h=0, d=0):
-    """Convert seconds, minutes, hours and days to seconds."""
-    return (s + m * 60 + h * 3600 + d * 86400)
-
 def parse_time_span(time_string):
     """Convert an inputted string representing a timespan, like 3h30m15s, into a duration in seconds."""
     pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
