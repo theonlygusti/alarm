@@ -18,29 +18,20 @@ def seconds_to_text(seconds):
         "1 minute and 30 seconds"
         "10 hours, 30 minutes and 10 seconds"
     """
-    # Special case because it's faster this way
-    if seconds == 0:
-        return "0 seconds"
     # Need the hours, minutes and seconds individually for putting into string
-    hours = seconds // (60 * 60)
-    hours = int(hours)
-    seconds %= 60 * 60
-    minutes = seconds // 60
-    minutes = int(minutes)
-    seconds %= 60
-    seconds = int(seconds)
+    hours, minutes, seconds = time.gmtime(seconds)[-6:-3]
 
     formatted_text = ""
     if hours > 0:
-        formatted_text += str(hours) + " " + ("hour", "hours")[hours > 1]
+        formatted_text += str(hours) + " " + "hour" + "s" if hours > 1 else ""
     if minutes > 0:
         if formatted_text.count(" ") > 0:
             formatted_text += (" and ", ", ")[seconds > 0]
-        formatted_text += str(minutes) + " " + ("minute", "minutes")[minutes > 1]
+        formatted_text += str(minutes) + " " + "minute" + "s" if minutes > 1 else ""
     if seconds > 0:
         if formatted_text.count(" ") > 0:
             formatted_text += " and "
-        formatted_text += str(seconds) + " " + ("second", "seconds")[seconds > 1]
+        formatted_text += str(seconds) + " " + "second" + "s" if seconds > 1 else ""
     return formatted_text
 
 def parse_time_span(time_string):
