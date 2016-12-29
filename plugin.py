@@ -2,10 +2,10 @@ import datetime
 import json
 import os
 import re
+import signal
 import subprocess
 import threading
 import time
-import unittest
 
 stop_audio = False
 
@@ -19,19 +19,19 @@ def seconds_to_text(seconds):
         "10 hours, 30 minutes and 10 seconds"
     """
     # Need the hours, minutes and seconds individually for putting into string
-    hours, minutes, seconds = time.gmtime(seconds)[-6:-3]
+    (hours, minutes, seconds) = time.gmtime(seconds)[-6:-3]
 
     formatted_text = ""
     if hours > 0:
-        formatted_text += str(hours) + " " + "hour" + "s" if hours > 1 else ""
+        formatted_text += str(hours) + " " + "hour" + ("s" if hours > 1 else "")
     if minutes > 0:
         if formatted_text.count(" ") > 0:
             formatted_text += (" and ", ", ")[seconds > 0]
-        formatted_text += str(minutes) + " " + "minute" + "s" if minutes > 1 else ""
+        formatted_text += str(minutes) + " " + "minute" + ("s" if minutes > 1 else "")
     if seconds > 0:
         if formatted_text.count(" ") > 0:
             formatted_text += " and "
-        formatted_text += str(seconds) + " " + "second" + "s" if seconds > 1 else ""
+        formatted_text += str(seconds) + " " + "second" + ("s" if seconds > 1 else "")
     return formatted_text
 
 def parse_time_span(time_string):
@@ -123,7 +123,7 @@ def results(fields, original_query):
                     "webview_transparent_background": True
                     }
             return {
-                "title": "%s in %s" % (message or "Alarm", seconds_to_text(seconds)),
+                "title": "{0} in {1}".format(message or "Alarm", seconds_to_text(seconds)),
                 "run_args": [seconds, message or "%s alarm" % seconds_to_text(seconds)],
                 "html": html.read(),
                 "webview_transparent_background": True
@@ -147,38 +147,8 @@ def results(fields, original_query):
 def run(seconds, message):
     alert_after_timeout(seconds, message)
 
-class TestParsingAndFormattingFunctions(unittest.TestCase):
-    """Test that the functions which parse strings into times and format times as strings are all working."""
-
-    def test_parse_time_span(self):
-        """Make sure parse_time_span properly converts a string, formatted like 3h30m30s, into a time duration."""
-        # Testing for normal data
-        self.assertEqual(parse_time_span("3h30m"), 12600)
-        self.assertEqual(parse_time_span("8h30m"), 30600)
-        self.assertEqual(parse_time_span("1m15s"), 75)
-        self.assertEqual(parse_time_span("20m"), 1200)
-        # Testing extreme data
-        self.assertEqual(parse_time_span("23h59m59s"), 86399)
-        self.assertEqual(parse_time_span("0h1m0s"), 60)
-        self.assertEqual(parse_time_span("60s"), 60)
-        # Testing abnormal data, these should all error
-        with self.assertRaises(AttributeError):
-            parse_time_span("five o-clock")
-        with self.assertRaises(AttributeError):
-            parse_time_span("1.5s")
-        with self.assertRaises(AttributeError):
-            parse_time_span("25")
-
-    def test_seconds_to_text(self):
-        """Make sure seconds_to_text formats a string into the correct human-readable structure."""
-        # Testing with normal inputs
-        self.assertEqual(seconds_to_text(18000), "5 hours")
-        self.assertEqual(seconds_to_text(12600), "3 hours and 30 minutes")
-        self.assertEqual(seconds_to_text(1200), "20 minutes")
-        self.assertEqual(seconds_to_text(60), "1 minute")
-        # Testing with extreme inputs
-        self.assertEqual(seconds_to_text(0), "0 seconds")
-        self.assertEqual(seconds_to_text(86399), "23 hours, 59 minutes and 59 seconds")
-        # Testing with invalid inputs
-        with self.assertRaises(TypeError):
-            seconds_to_text("What's a string doing here?")
+# def do_nothing_when_killed(sig, frame):
+#     pass
+# 
+# signal.signal(signal.SIGINT, do_nothing_when_killed)
+# signal.signal(signal.SIGTERM, do_nothing_when_killed)
