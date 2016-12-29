@@ -124,15 +124,15 @@ def results(fields, original_query):
                     }
             return {
                 "title": "{0} in {1}".format(message or "Alarm", seconds_to_text(seconds)),
-                "run_args": [seconds, message or "%s alarm" % seconds_to_text(seconds)],
+                "run_args": [seconds, message or "{0} alarm".format(seconds_to_text(seconds))],
                 "html": html.read(),
                 "webview_transparent_background": True
                 }
         else:
             try:
                 return {
-                    "title": "Set an alarm for %s" % time,
-                    "run_args": [parse_absolute_time(time), message or "%s alarm" % (time)],
+                    "title": "Set an alarm for {0}".format(time),
+                    "run_args": [parse_absolute_time(time), message or "{0} alarm".format(time)],
                     "html": html.read(),
                     "webview_transparent_background": True
                     }
