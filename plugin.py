@@ -107,8 +107,8 @@ def results(fields, original_query):
     message = " ".join(arguments[1:])
     with open("results.html") as html:
         # which input format is the user trying to use?
-        pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
-        if pattern.match(time):
+        time_span_pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
+        if time_span_pattern.match(time):
             seconds = 0
             try:
                 seconds = parse_time_span(time)
