@@ -2,7 +2,6 @@ import datetime
 import json
 import os
 import re
-import signal
 import subprocess
 import threading
 import time
@@ -11,7 +10,7 @@ stop_audio = False
 
 def seconds_to_text(seconds):
     """Return the user-friendly version of the time duration specified by seconds.
-    
+
     Outputs should resemble:
         "3 hours and 30 minutes"
         "20 minutes"
@@ -147,8 +146,3 @@ def results(fields, original_query):
 def run(seconds, message):
     alert_after_timeout(seconds, message)
 
-# def do_nothing_when_killed(sig, frame):
-#     pass
-# 
-# signal.signal(signal.SIGINT, do_nothing_when_killed)
-# signal.signal(signal.SIGTERM, do_nothing_when_killed)
