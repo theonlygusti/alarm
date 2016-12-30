@@ -109,9 +109,14 @@ def results(fields, original_query):
         # which input format is the user trying to use?
         time_span_pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
         if time_span_pattern.match(time):
-            seconds = 0
             try:
                 seconds = parse_time_span(time)
+                return {
+                    "title": "{0} in {1}".format(message or "Alarm", seconds_to_text(seconds)),
+                    "run_args": [seconds, message or "{0} alarm".format(seconds_to_text(seconds))],
+                    "html": html.read(),
+                    "webview_transparent_background": True
+                    }
             except AttributeError:
                 return {
                     "title": "Don't understand.",
@@ -119,12 +124,6 @@ def results(fields, original_query):
                     "html": "Make sure your input is formatted properly.",
                     "webview_transparent_background": True
                     }
-            return {
-                "title": "{0} in {1}".format(message or "Alarm", seconds_to_text(seconds)),
-                "run_args": [seconds, message or "{0} alarm".format(seconds_to_text(seconds))],
-                "html": html.read(),
-                "webview_transparent_background": True
-                }
         else:
             try:
                 return {
