@@ -6,8 +6,6 @@ import subprocess
 import threading
 import time
 
-stop_audio = False
-
 def seconds_to_text(seconds):
     """Return the user-friendly version of the time duration specified by seconds.
 
@@ -75,32 +73,32 @@ def show_alert(message="Flashlight alarm"):
     message = json.dumps(str(message))
     os.system("osascript dialog.scpt {0}".format(message))
 
-stop_sound = False
-def play_alarm(file_name = "beep.wav"):
-    """Repeat the sound specified to mimic an alarm."""
-    while not stop_sound:
-        process = subprocess.Popen(["afplay", file_name])
-        while not stop_sound:
-            print("stop_sound",stop_sound)
-            print("process.poll()", process.poll())
-            print("process.poll is not None", process.poll() is not None)
-            if process.poll() is not None:
-                break
-            time.sleep(0.1)
-        if stop_sound:
-            process.kill()
+class AlarmThread(threading.Thread):
+    def __init__(self, file_name="beep.wav"):
+        super().__init__()
+        self.file_name = file_name
+        self.ongoing = None
+
+    def run(self):
+        self.ongoing = True
+        while self.ongoing:
+            self.process = subprocess.Popen(["afplay", self.file_name])
+            self.process.wait()
+
+    def stop(self):
+        if self.ongoing is not None:
+            self.ongoing = False
+            self.process.kill()
 
 def alert_after_timeout(timeout, message):
     """After timeout seconds, show an alert and play the alarm sound."""
-    global stop_sound
     time.sleep(timeout)
-    process = None
-    thread = threading.Thread(target=play_alarm)
+    thread = AlarmThread()
     thread.start()
     # show_alert is synchronous, it must be closed before the script continues
     show_alert(message)
 
-    stop_sound = True
+    thread.stop()
     thread.join()
 
 def results(fields, original_query):
