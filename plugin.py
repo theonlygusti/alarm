@@ -75,7 +75,7 @@ def show_alert(message="Flashlight alarm"):
 
 class AlarmThread(threading.Thread):
     def __init__(self, file_name="beep.wav"):
-        super().__init__()
+        super(AlarmThread, self).__init__()
         self.file_name = file_name
         self.ongoing = None
 
