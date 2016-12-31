@@ -5,5 +5,5 @@
     "examples": ["alarm at 7:10 good morning, time to get up", "alarm in 30s", "alarm in 3h30m"],
     "categories": ["Utilities"],
     "creator_name": "George Bakewell",
-    "creator_url": "https://github.com/theonlygusti"
+    "creator_url": "https://github.com/theonlygusti/alarm"
 }
