@@ -76,12 +76,14 @@ class AlarmThread(threading.Thread):
         super(AlarmThread, self).__init__()
         self.file_name = file_name
         self.ongoing = None
+        self.process = None
 
     def run(self):
         self.ongoing = True
         while self.ongoing:
             self.process = subprocess.Popen(["afplay", self.file_name])
             self.process.wait()
+            self.process = None
 
     def stop(self):
         if self.ongoing is not None:
