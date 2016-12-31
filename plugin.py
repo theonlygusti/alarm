@@ -97,7 +97,7 @@ def alert_after_timeout(timeout, message):
     thread.start()
     while not thread.process:
         time.sleep(0.1)
-    # show_alert is synchronous, it must be closed before the script continues
+
     show_alert(message)
 
     thread.stop()
