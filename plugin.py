@@ -75,28 +75,31 @@ class AlarmThread(threading.Thread):
     def __init__(self, file_name="beep.wav"):
         super(AlarmThread, self).__init__()
         self.file_name = file_name
-        self.ongoing = None
+        self.lock = threading.Lock()
+        self.ongoing = False
         self.process = None
 
     def run(self):
         self.ongoing = True
-        while self.ongoing:
-            self.process = subprocess.Popen(["afplay", self.file_name])
+        while True:
+            with self.lock:
+                if not self.ongoing:
+                    break
+                self.process = subprocess.Popen(["afplay", self.file_name])
             self.process.wait()
-            self.process = None
 
     def stop(self):
-        if self.ongoing is not None:
-            self.ongoing = False
-            self.process.kill()
+        with self.lock:
+            if self.ongoing:
+                self.ongoing = False
+                if self.process:
+                    self.process.kill()
 
 def alert_after_timeout(timeout, message):
     """After timeout seconds, show an alert and play the alarm sound."""
     time.sleep(timeout)
     thread = AlarmThread()
     thread.start()
-    while not thread.process:
-        time.sleep(0.1)
 
     show_alert(message)
 
