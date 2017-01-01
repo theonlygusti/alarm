@@ -6,7 +6,7 @@ import threading
 import time
 
 def block_for(seconds):
-    """Wait at least seconds, this function should not be affected by the computer sleeping."""
+    """Wait at least seconds. This function should not be affected by the computer sleeping."""
     end_time = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
 
     while datetime.datetime.now() < end_time:
@@ -125,7 +125,7 @@ def results(fields, original_query):
                 seconds = parse_time_span(time)
                 return {
                     "title": "{0} in {1}".format(message or "Alarm", seconds_to_text(seconds)),
-                    "run_args": [seconds, message or "{0} alarm".format(seconds_to_text(seconds))],
+                    "run_args": [time, message or "{0} alarm".format(seconds_to_text(seconds))],
                     "html": html.read(),
                     "webview_transparent_background": True
                     }
@@ -140,7 +140,7 @@ def results(fields, original_query):
             try:
                 return {
                     "title": "Set an alarm for {0}".format(time),
-                    "run_args": [parse_absolute_time(time), message or "{0} alarm".format(time)],
+                    "run_args": [time, message or "{0} alarm".format(time)],
                     "html": html.read(),
                     "webview_transparent_background": True
                     }
@@ -152,6 +152,12 @@ def results(fields, original_query):
                     "webview_transparent_background": True
                     }
 
-def run(seconds, message):
-    alert_after_timeout(seconds, message)
+def run(time, message):
+    time_span_pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
+    if time_span_pattern.match(time):
+        seconds = parse_time_span(time)
+        alert_after_timeout(seconds, message)
+    else:
+        seconds = parse_absolute_time(time)
+        alert_after_timeout(seconds, message)
 
