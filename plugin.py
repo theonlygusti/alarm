@@ -5,6 +5,13 @@ import subprocess
 import threading
 import time
 
+def block_for(seconds):
+    """Wait at least seconds, this function should not be affected by the computer sleeping."""
+    end_time = datetime.datetime.now() + datetime.timedelta(seconds)
+
+    while datetime.datetime.now() < end_time:
+        pass
+
 def seconds_to_text(seconds):
     """Return the user-friendly version of the time duration specified by seconds.
 
@@ -97,7 +104,7 @@ class AlarmThread(threading.Thread):
 
 def alert_after_timeout(timeout, message):
     """After timeout seconds, show an alert and play the alarm sound."""
-    time.sleep(timeout)
+    block_for(timeout)
     thread = AlarmThread()
     thread.start()
 
