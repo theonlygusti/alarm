@@ -10,7 +10,7 @@ def block_for(seconds):
     end_time = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
 
     while datetime.datetime.now() < end_time:
-        pass
+        time.sleep(1)
 
 def seconds_to_text(seconds):
     """Return the user-friendly version of the time duration specified by seconds.
