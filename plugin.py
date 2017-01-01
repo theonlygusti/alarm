@@ -7,7 +7,7 @@ import time
 
 def block_for(seconds):
     """Wait at least seconds, this function should not be affected by the computer sleeping."""
-    end_time = datetime.datetime.now() + datetime.timedelta(seconds)
+    end_time = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
 
     while datetime.datetime.now() < end_time:
         pass
