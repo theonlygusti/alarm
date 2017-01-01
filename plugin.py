@@ -154,10 +154,10 @@ def results(fields, original_query):
 
 def run(time, message):
     time_span_pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
+    seconds = None
     if time_span_pattern.match(time):
         seconds = parse_time_span(time)
-        alert_after_timeout(seconds, message)
     else:
         seconds = parse_absolute_time(time)
-        alert_after_timeout(seconds, message)
+    alert_after_timeout(seconds, message)
 
