@@ -1,5 +1,6 @@
 import datetime
 import json
+import os
 import re
 import subprocess
 import threading
@@ -159,5 +160,7 @@ def run(time, message):
         seconds = parse_time_span(time)
     else:
         seconds = parse_absolute_time(time)
-    alert_after_timeout(seconds, message)
+    newpid = os.fork()
+    if newpid == 0:
+        alert_after_timeout(seconds, message)
 
