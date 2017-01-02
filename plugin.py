@@ -114,6 +114,22 @@ def alert_after_timeout(timeout, message):
     thread.stop()
     thread.join()
 
+def results_dictionary(title, run_args, html):
+    return {
+        "title": title,
+        "run_args": run_args,
+        "html": html,
+        "webview_transparent_background": True
+        }
+
+def erroneous_results():
+    return {
+        "title": "Don't understand.",
+        "run_args": [],
+        "html": "Make sure your input is formatted properly.",
+        "webview_transparent_background": True
+        }
+
 def results(fields, original_query):
     arguments = fields["~arguments"].split(" ")
     time = arguments[0]
@@ -124,34 +140,16 @@ def results(fields, original_query):
         if time_span_pattern.match(time):
             try:
                 seconds = parse_time_span(time)
-                return {
-                    "title": "{0} in {1}".format(message or "Alarm", seconds_to_text(seconds)),
-                    "run_args": [time, message or "{0} alarm".format(seconds_to_text(seconds))],
-                    "html": html.read(),
-                    "webview_transparent_background": True
-                    }
+                message = message or "Alarm"
+                return results_dictionary("{} in {}".format(message, seconds_to_text(seconds)), [time, "{} alarm".format(seconds_to_text(seconds))], html.read())
             except AttributeError:
-                return {
-                    "title": "Don't understand.",
-                    "run_args": [],
-                    "html": "Make sure your input is formatted properly.",
-                    "webview_transparent_background": True
-                    }
+                return erroneous_results()
         else:
             try:
-                return {
-                    "title": "Set an alarm for {0}".format(time),
-                    "run_args": [time, message or "{0} alarm".format(time)],
-                    "html": html.read(),
-                    "webview_transparent_background": True
-                    }
+                message = message or "{} alarm".format(time)
+                return results_dictionary("Set an alarm for {}".format(time), [time, message], html.read())
             except ValueError:
-                return {
-                    "title": "Don't understand.",
-                    "run_args": [],
-                    "html": "Make sure your input is formatted properly.",
-                    "webview_transparent_background": True
-                    }
+                return erroneous_results()
 
 def run(time, message):
     time_span_pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
@@ -160,6 +158,8 @@ def run(time, message):
         seconds = parse_time_span(time)
     else:
         seconds = parse_absolute_time(time)
+    # needs to fork itself into a child process so that the alarm can finish running. Flashlight would otherwise kill
+    # the script after 30 seconds, cutting the alarm short or preventing it from ever running
     newpid = os.fork()
     if newpid == 0:
         alert_after_timeout(seconds, message)
