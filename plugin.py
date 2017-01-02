@@ -75,9 +75,14 @@ def parse_absolute_time(time_string):
     total_seconds = (time - datetime.datetime.now()).total_seconds()
     return round(total_seconds)
 
-def show_alert(message="Flashlight alarm"):
+def show_alert(message):
     """Display a macOS dialog."""
     subprocess.call(["osascript", "dialog.scpt", str(message)])
+
+def show_notification(message):
+    """Display a macOS notification."""
+    message = json.dumps(message)
+    subprocess.call(["osascript", "-e", "display notification {}".format(message)])
 
 class AlarmThread(threading.Thread):
     def __init__(self, file_name="beep.wav"):
