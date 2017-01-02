@@ -161,8 +161,7 @@ def results(fields, original_query):
         if time_span_pattern.match(time):
             try:
                 seconds = parse_time_span(time)
-                message = message or "Alarm"
-                return results_dictionary("{} in {}".format(message, seconds_to_text(seconds)), [time, "{} alarm".format(seconds_to_text(seconds))], html.read())
+                return results_dictionary("{} in {}".format(message or "Alarm", seconds_to_text(seconds)), [time, message or "{} alarm".format(seconds_to_text(seconds))], html.read())
             except AttributeError:
                 return erroneous_results()
         else:
