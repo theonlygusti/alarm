@@ -49,9 +49,8 @@ def parse_time_span(time_string):
     return round(total_seconds)
 
 def parse_absolute_time(time_string):
-    """Convert an inputted string like '7:30PM' or '22:00' into the number of seconds from now until
-    that time. If the time is earlier in the day than the current time, take the number of seconds
-    until that time occurrs tomorrow.
+    """Convert an inputted string like '7:30PM' or '22:00' into the datetime object it represents.
+    If the time is earlier in the day than the current time, take the same time tomorrow.
     """
     # As there are so many possible input formats, "19:30", "10", "6:00AM", etc. I thought a sensible
     # way to parse the inputs would be to use a dictionary which pairs patterns with parsing rules.
@@ -72,8 +71,25 @@ def parse_absolute_time(time_string):
     if datetime.datetime.now() > time:
         # it's likely the user wants to set an alarm for tomorrow
         time = time + datetime.timedelta(days = 1)
+    return time
+
+def seconds_until(time):
+    """Return the number of seconds until a datetime."""
     total_seconds = (time - datetime.datetime.now()).total_seconds()
     return round(total_seconds)
+
+def pretty_absolute_time(time_string):
+    """Convert a string representing an absolute time, e.g. '1' or '3:30pm', into a human-readable format."""
+    time = parse_absolute_time(time_string)
+    formats = {
+        "^\d{1,2}$": "%I o'clock",
+        "^\d{1,2}(AM|PM)$": "%I o'clock",
+        "^\d{1,2}:\d{2}$": "%H:%M",
+        "^\d{1,2}:\d{2}(AM|PM)$": "%I:%M%p"
+        }
+    for key, value in formats.items():
+        if re.match(key, time_string, re.IGNORECASE):
+            return time.strftime(value).lstrip("0")
 
 def show_alert(message):
     """Display a macOS dialog."""
@@ -151,8 +167,8 @@ def results(fields, original_query):
                 return erroneous_results()
         else:
             try:
-                message = message or "{} alarm".format(time)
-                return results_dictionary("Set an alarm for {}".format(time), [time, message], html.read())
+                message = message or "{} alarm".format(pretty_absolute_time(time))
+                return results_dictionary("Set an alarm for {}".format(pretty_absolute_time(time)), [time, message], html.read())
             except ValueError:
                 return erroneous_results()
 
@@ -164,8 +180,8 @@ def run(time, message):
             seconds = parse_time_span(time)
             show_notification("An alarm for {} was successfully set.".format(seconds_to_text(seconds)))
         else:
-            seconds = parse_absolute_time(time)
-            show_notification("An alarm for {} was successfully set.")
+            seconds = seconds_until(parse_absolute_time(time))
+            show_notification("An alarm for {} was successfully set.".format(pretty_absolute_time(time)))
     except:
         show_notification("The alarm could not be set.")
         return
