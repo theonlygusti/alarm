@@ -157,12 +157,18 @@ def results(fields, original_query):
                 return erroneous_results()
 
 def run(time, message):
-    time_span_pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
     seconds = None
-    if time_span_pattern.match(time):
-        seconds = parse_time_span(time)
-    else:
-        seconds = parse_absolute_time(time)
+    try:
+        time_span_pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
+        if time_span_pattern.match(time):
+            seconds = parse_time_span(time)
+            show_notification("An alarm for {} was successfully set.".format(seconds_to_text(seconds)))
+        else:
+            seconds = parse_absolute_time(time)
+            show_notification("An alarm for {} was successfully set.")
+    except:
+        show_notification("The alarm could not be set.")
+        return
     # needs to fork itself into a child process so that the alarm can finish running. Flashlight would otherwise kill
     # the script after 30 seconds, cutting the alarm short or preventing it from ever running
     newpid = os.fork()
