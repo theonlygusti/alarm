@@ -23,8 +23,10 @@ def seconds_to_text(seconds):
         "10 hours, 30 minutes and 10 seconds"
     """
     # Need the hours, minutes and seconds individually for putting into string
-    pattern = re.compile(r"^(?:(?P<hours>\d+)h)?(?:(?P<minutes>\d+)m)?(?:(?P<seconds>\d+)s)?$")
-    (hours, minutes, seconds) = pattern.match(time_string).groups()
+    hours = int(seconds // 3600)
+    seconds %= 3600
+    minutes = int(seconds // 60)
+    seconds %= int(60)
 
     formatted_text = ""
     if hours > 0:
