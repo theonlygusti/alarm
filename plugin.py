@@ -44,9 +44,9 @@ def seconds_to_text(seconds):
 def parse_time_span(time_string, time_span_pattern):
     """Convert an inputted string representing a timespan, like 3h30m15s, into a duration in seconds."""
     (hours, minutes, seconds) = time_span_pattern.match(time_string).groups()
-    hours = 0 if hours is None else int(hours)
-    minutes = 0 if minutes is None else int(minutes)
-    seconds = 0 if seconds is None else int(seconds)
+    hours = 0 if hours is None else float(hours)
+    minutes = 0 if minutes is None else float(minutes)
+    seconds = 0 if seconds is None else float(seconds)
     total_seconds = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds).total_seconds()
     return round(total_seconds)
 
@@ -162,7 +162,7 @@ def results(fields, original_query):
         time_span_pattern = re.compile(r"^(?:(?P<hours>[0-9]+(?:[,.][0-9]+)?)h)?(?:(?P<minutes>[0-9]+(?:[,.][0-9]+)?)m)?(?:(?P<seconds>[0-9]+(?:[,.][0-9]+)?)s)?$")
         if time_span_pattern.match(time):
             try:
-                seconds = parse_time_span(time)
+                seconds = parse_time_span(time, time_span_pattern)
                 return results_dictionary("{} in {}".format(message or "Alarm", seconds_to_text(seconds)), [time, message or "{} alarm".format(seconds_to_text(seconds)), time_span_pattern], html.read())
             except AttributeError:
                 return erroneous_results()
