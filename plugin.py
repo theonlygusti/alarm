@@ -44,7 +44,7 @@ def seconds_to_text(seconds):
 
 def parse_time_span(time_string, time_span_pattern):
     """Convert an inputted string representing a timespan, like 3h30m15s, into a duration in seconds."""
-    (hours, minutes, seconds) = re.compile(time_span_pattern).match(time_string).groups()
+    (hours, minutes, seconds) = re.match(time_span_pattern, time_string).groups()
     hours = 0 if hours is None else float(hours)
     minutes = 0 if minutes is None else float(minutes)
     seconds = 0 if seconds is None else float(seconds)
@@ -161,7 +161,7 @@ def results(fields, original_query):
     with open("results.html") as html:
         # which input format is the user trying to use?
         time_span_pattern = r"^(?:(?P<hours>[0-9]+(?:[,.][0-9]+)?)h)?(?:(?P<minutes>[0-9]+(?:[,.][0-9]+)?)m)?(?:(?P<seconds>[0-9]+(?:[,.][0-9]+)?)s)?$"
-        if re.compile(time_span_pattern.match(time)):
+        if re.match(time_span_pattern, time):
             try:
                 seconds = parse_time_span(time, time_span_pattern)
                 return results_dictionary("{} in {}".format(message or "Alarm", seconds_to_text(seconds)), [time, message or "{} alarm".format(seconds_to_text(seconds)), time_span_pattern], html.read())
@@ -177,7 +177,7 @@ def results(fields, original_query):
 def run(time, message, time_span_pattern):
     seconds = None
     try:
-        if re.compile(time_span_pattern).match(time):
+        if re.match(time_span_pattern, time):
             seconds = parse_time_span(time, time_span_pattern)
             show_notification("An alarm for {} was successfully set.".format(seconds_to_text(seconds)))
         else:
