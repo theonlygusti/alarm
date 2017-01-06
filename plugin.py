@@ -158,6 +158,9 @@ def results(fields, original_query):
     arguments = fields["~arguments"].split(" ")
     time = arguments[0]
     message = " ".join(arguments[1:])
+    if re.match("^AM|PM", message, re.IGNORECASE):
+        time += message.split(" ", 1)[0]
+        message = message.split(" ", 1)[1:]
     with open("results.html") as html:
         # which input format is the user trying to use?
         time_span_pattern = r"^(?:(?P<hours>[0-9]+(?:[,.][0-9]+)?)h)?(?:(?P<minutes>[0-9]+(?:[,.][0-9]+)?)m)?(?:(?P<seconds>[0-9]+(?:[,.][0-9]+)?)s)?$"
