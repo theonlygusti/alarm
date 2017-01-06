@@ -26,7 +26,8 @@ def seconds_to_text(seconds):
     hours = int(seconds // 3600)
     seconds %= 3600
     minutes = int(seconds // 60)
-    seconds %= int(60)
+    seconds %= 60
+    seconds = int(seconds)
 
     formatted_text = ""
     if hours > 0:
