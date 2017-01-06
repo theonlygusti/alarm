@@ -191,4 +191,5 @@ def run(time, message, time_span_pattern):
     newpid = os.fork()
     if newpid == 0:
         alert_after_timeout(seconds, message)
+        exit()
 
