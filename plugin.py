@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 import re
+import string
 import subprocess
 import threading
 import time
@@ -172,8 +173,10 @@ def results(fields, original_query):
                 return erroneous_results()
         else:
             try:
+                html_results = string.Template(html.read()).substitute(
+                    absolute_time_stamp = int(parse_absolute_time(time).strftime("%s")) * 1000)
                 message = message or "{} alarm".format(pretty_absolute_time(time))
-                return results_dictionary("Set an alarm for {}".format(pretty_absolute_time(time)), [time, message], html.read())
+                return results_dictionary("Set an alarm for {}".format(pretty_absolute_time(time)), [time, message], html_results)
             except ValueError:
                 return erroneous_results()
 
