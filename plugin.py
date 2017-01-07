@@ -162,23 +162,28 @@ def results(fields, original_query):
     if re.match("^AM|PM", message, re.IGNORECASE):
         time += message.split(" ", 1)[0]
         message = message.split(" ", 1)[1:]
-    with open("results.html") as html:
-        # which input format is the user trying to use?
-        time_span_pattern = r"^(?:(?P<hours>[0-9]+(?:[,.][0-9]+)?)h)?(?:(?P<minutes>[0-9]+(?:[,.][0-9]+)?)m)?(?:(?P<seconds>[0-9]+(?:[,.][0-9]+)?)s)?$"
-        if re.match(time_span_pattern, time):
-            try:
-                seconds = parse_time_span(time, time_span_pattern)
-                return results_dictionary("{} in {}".format(message or "Alarm", seconds_to_text(seconds)), [time, message or "{} alarm".format(seconds_to_text(seconds)), time_span_pattern], html.read())
-            except AttributeError:
-                return erroneous_results()
-        else:
-            try:
+    # which input format is the user trying to use?
+    time_span_pattern = r"^(?:(?P<hours>[0-9]+(?:[,.][0-9]+)?)h)?(?:(?P<minutes>[0-9]+(?:[,.][0-9]+)?)m)?(?:(?P<seconds>[0-9]+(?:[,.][0-9]+)?)s)?$"
+    if re.match(time_span_pattern, time):
+        try:
+            seconds = parse_time_span(time, time_span_pattern)
+            html_results = None
+            with open("relative_results.html") as html:
+                html_results = string.Template(html.read()).substitute(
+                    time_span = seconds)
+            return results_dictionary("{} in {}".format(message or "Alarm", seconds_to_text(seconds)), [time, message or "{} alarm".format(seconds_to_text(seconds)), time_span_pattern], html.read())
+        except AttributeError:
+            return erroneous_results()
+    else:
+        try:
+            html_results = None
+            with open("absolute_results.html") as html:
                 html_results = string.Template(html.read()).substitute(
                     absolute_time_stamp = int(parse_absolute_time(time).strftime("%s")) * 1000)
-                message = message or "{} alarm".format(pretty_absolute_time(time))
-                return results_dictionary("Set an alarm for {}".format(pretty_absolute_time(time)), [time, message], html_results)
-            except ValueError:
-                return erroneous_results()
+            message = message or "{} alarm".format(pretty_absolute_time(time))
+            return results_dictionary("Set an alarm for {}".format(pretty_absolute_time(time)), [time, message, time_span_pattern], html_results)
+        except ValueError:
+            return erroneous_results()
 
 def run(time, message, time_span_pattern):
     seconds = None
