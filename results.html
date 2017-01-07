@@ -13,9 +13,14 @@
     </div>
   </center>
   <script>
-    var picker = new Pikaday({});
+    var picker = new Pikaday({
+      defaultDate: new Date(1483228800000),
+      setDefaultDate: true
+    });
+
     var calendar = document.getElementById("datetime-calendar");
     calendar.appendChild(picker.el);
+
     picker.show();
   </script>
 </body>
