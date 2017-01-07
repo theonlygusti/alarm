@@ -1,7 +1,11 @@
 # Alarm
 
 A [Flashlight](http://flashlight.nateparrott.com/) plugin for triggering an
-alarm after some amount of time.
+alarm.
+
+Can be used as a regular alarm clock by specifying times you want the
+alarm to sound at, but can also be used as a countdown timer by specifying
+some time period you want the alarm to sound after.
 
 Allows alarms to be created in a variety of different ways:
 
