@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
+  <script src="pickaday.js"></script>
 </head>
 <body>
   <center>
     <div id="results">
-      <input id="datetime-calendar"></input>
+      <div id="datetime-calendar"></div>
     </div>
   </center>
   <script>
-    flatpickr("#datetime-calendar", {
-      inline: true,
-      enableTime: true
+    var picker = new Pickaday({
+      bound: false,
+      container: document.getElementById("datetime-calendar")
     });
   </script>
 </body>
