@@ -10,7 +10,14 @@
 <body>
   <center>
     <div id="results">
+      <input id="datetime-calendar"></input>
     </div>
   </center>
+  <script>
+    flatpickr("#datetime-calendar", {
+      inline: true,
+      enableTime: true
+    });
+  </script>
 </body>
 </html>
