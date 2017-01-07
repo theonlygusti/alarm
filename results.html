@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
-  <script src="pickaday.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.5.1/css/pikaday.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.5.1/pikaday.min.js"></script>
 </head>
 <body>
   <center>
@@ -12,10 +13,10 @@
     </div>
   </center>
   <script>
-    var picker = new Pickaday({
-      bound: false,
-      container: document.getElementById("datetime-calendar")
-    });
+    var picker = new Pikaday({});
+    var calendar = document.getElementById("datetime-calendar");
+    calendar.appendChild(picker.el);
+    picker.show();
   </script>
 </body>
 </html>
