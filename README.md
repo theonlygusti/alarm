@@ -4,8 +4,6 @@ A [Flashlight](http://flashlight.nateparrott.com/) plugin for triggering an alar
 
 See alarm's author's [original repository](https://github.com/theonlygusti/alarm) for queries regarding this plugin.
 
-![http://i.cubeupload.com/2UUlpl.png](http://i.cubeupload.com/2UUlpl.png)
-
 Allows alarms to be created in a variety of different ways:
 
     alarm in 20m
@@ -13,3 +11,6 @@ Allows alarms to be created in a variety of different ways:
     alarm at 7:10
 
 Uses an alert and accompanying sound.
+
+![http://i.cubeupload.com/2UUlpl.png](http://i.cubeupload.com/2UUlpl.png)
+
