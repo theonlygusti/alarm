@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
+  <style>
+    #results {
+      background-color: #fff;
+      color: #030303;
+      font-size: 48px;
+      font-family: arial;
+      padding: 10px;
+      text-align: left;
+    }
+  </style>
 </head>
 <body>
   <center>
@@ -12,7 +22,7 @@
   <script>
     var time_span = $time_span;
     var text_time_span = "$text_time_span";
-    document.getElementById("results").innerText = text_time_span;
+    document.getElementById("results").innerText = "Sound an alarm in " + text_time_span;
   </script>
 </body>
 </html>
