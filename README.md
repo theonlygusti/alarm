@@ -15,7 +15,9 @@ Allows alarms to be created in a variety of different ways:
 
 Uses an alert and accompanying sound.
 
-![http://i.cubeupload.com/2UUlpl.png](http://i.cubeupload.com/2UUlpl.png)
-
 See the author's [original repository](https://github.com/theonlygusti/alarm)
 if you have any queries regarding this plugin.
+
+![](http://i.cubeupload.com/X8LVp2.png)
+
+![](http://i.cubeupload.com/vqPOju.png)
