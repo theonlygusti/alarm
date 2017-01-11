@@ -7,9 +7,16 @@
     #results {
       background-color: #fff;
       color: #030303;
-      font-size: 48px;
       font-family: arial;
       padding: 10px;
+      box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.80);
+    }
+    #icon {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #message {
+      font-size: 22px;
       text-align: left;
     }
   </style>
@@ -17,12 +24,14 @@
 <body>
   <center>
     <div id="results">
+      <img src="Icon.png" id="icon">
+      <p id="message"></p>
     </div>
   </center>
   <script>
     var time_span = $time_span;
     var text_time_span = "$text_time_span";
-    document.getElementById("results").innerText = "Sound an alarm in " + text_time_span;
+    document.getElementById("message").innerText = "Sound an alarm in " + text_time_span + ".";
   </script>
 </body>
 </html>
