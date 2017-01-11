@@ -170,7 +170,8 @@ def results(fields, original_query):
             html_results = None
             with open("relative_results.html") as html:
                 html_results = string.Template(html.read()).substitute(
-                    time_span = seconds)
+                    time_span = seconds,
+                    text_time_span = seconds_to_text(seconds))
             return results_dictionary("{} in {}".format(message or "Alarm", seconds_to_text(seconds)), [time, message or "{} alarm".format(seconds_to_text(seconds)), time_span_pattern], html_results)
         except AttributeError:
             return erroneous_results()
