@@ -4,28 +4,50 @@
   <meta charset="UTF-8">
   <title></title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.5.1/css/pikaday.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.5.1/pikaday.min.js"></script>
   <style>
     * {
       pointer-events: none;
     }
+    #results {
+      position: relative;
+      top: 50%;
+      transform: translate-Y(-50%);
+    }
     .pika-single {
       width: 256px;
       margin-left: auto;
       margin-right: auto;
+      box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.80);
+      border-style: none;
+    }
+    #time {
+      font-size: 64px;
+      font-family: arial;
+      color: #303030;
+      width: 236px;
+      background-color: #fff;
+      padding: 10px;
+      box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.80);
     }
   </style>
 </head>
 <body>
   <center>
     <div id="results">
+      <div id="time"></div>
       <div id="datetime-calendar"></div>
     </div>
   </center>
   <script>
-    var absolute_time_stamp = $absolute_time_stamp;
+    function padLeft(number, length, character) {
+      return Array(length - String(number).length + 1).join(character || "0") + number;
+    }
+
+    var absolute_time_stamp = new Date($absolute_time_stamp);
     var picker = new Pikaday({
-      defaultDate: new Date(absolute_time_stamp),
+      defaultDate: absolute_time_stamp,
       setDefaultDate: true
     });
 
@@ -33,6 +55,9 @@
     calendar.appendChild(picker.el);
 
     picker.show();
+
+    jQuery("#time").text(padLeft(absolute_time_stamp.getHours(), 2) + ":" + padLeft(absolute_time_stamp.getMinutes(), 2));
+    jQuery("*").keydown(false);
   </script>
 </body>
 </html>
