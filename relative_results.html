@@ -3,36 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.5.1/css/pikaday.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.5.1/pikaday.min.js"></script>
-  <style>
-    * {
-      pointer-events: none;
-    }
-    .pika-single {
-      width: 256px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-  </style>
 </head>
 <body>
   <center>
     <div id="results">
-      <div id="datetime-calendar"></div>
     </div>
   </center>
   <script>
-    var absolute_time_stamp = $absolute_time_stamp;
-    var picker = new Pikaday({
-      defaultDate: new Date(absolute_time_stamp),
-      setDefaultDate: true
-    });
-
-    var calendar = document.getElementById("datetime-calendar");
-    calendar.appendChild(picker.el);
-
-    picker.show();
+    var time_span = $time_span;
   </script>
 </body>
 </html>
