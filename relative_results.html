@@ -25,13 +25,19 @@
   <center>
     <div id="results">
       <img src="Icon.png" id="icon">
-      <p id="message"></p>
+      <p id="time"></p>
+      <q id="message"></q>
     </div>
   </center>
   <script>
     var time_span = $time_span;
     var text_time_span = "$text_time_span";
-    document.getElementById("message").innerText = "Sound an alarm in " + text_time_span + ".";
+    document.getElementById("time").innerText = "Sound an alarm in " + text_time_span + ".";
+    var message = "$message";
+    if (message)
+      document.getElementById("message").innerText = message;
+    else
+      document.getElementById("message").outerHTML = "";
   </script>
 </body>
 </html>
