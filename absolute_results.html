@@ -14,28 +14,37 @@
       position: relative;
       top: 50%;
       transform: translate-Y(-50%);
+      color: #303030;
+      background-color: white;
+      width: 256px;
+      font-family: arial;
+      box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.80);
     }
     .pika-single {
       width: 256px;
       margin-left: auto;
       margin-right: auto;
-      box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.80);
       border-style: none;
+      margin-top: 2px;
+    }
+    #message {
+      font-size: 22px;
+      width: 236px;
+      display: inline-block;
+      padding: 10px;
+      border-bottom: 1px solid #E0E0E0;
     }
     #time {
       font-size: 64px;
-      font-family: arial;
-      color: #303030;
-      width: 236px;
-      background-color: #fff;
       padding: 10px;
-      box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.80);
+      border-bottom: 1px solid #E0E0E0;
     }
   </style>
 </head>
 <body>
   <center>
     <div id="results">
+      <q id="message"></q>
       <div id="time"></div>
       <div id="datetime-calendar"></div>
     </div>
@@ -55,6 +64,13 @@
     calendar.appendChild(picker.el);
 
     picker.show();
+
+    var message = "$message";
+    if (message) {
+      document.getElementById("message").innerText = message;
+    } else {
+      document.getElementById("message").outerHTML = "";
+    }
 
     jQuery("#time").text(padLeft(absolute_time_stamp.getHours(), 2) + ":" + padLeft(absolute_time_stamp.getMinutes(), 2));
     jQuery("*").keydown(false);

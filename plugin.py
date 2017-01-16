@@ -181,7 +181,8 @@ def results(fields, original_query):
             html_results = None
             with open("absolute_results.html") as html:
                 html_results = string.Template(html.read()).substitute(
-                    absolute_time_stamp = int(parse_absolute_time(time).strftime("%s")) * 1000)
+                    absolute_time_stamp = int(parse_absolute_time(time).strftime("%s")) * 1000,
+                    message = message)
             message = message or "{} alarm".format(pretty_absolute_time(time))
             return results_dictionary("Set an alarm for {}".format(pretty_absolute_time(time)), [time, message, time_span_pattern], html_results)
         except ValueError:
