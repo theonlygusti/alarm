@@ -15,7 +15,7 @@
       margin-left: auto;
       margin-right: auto;
     }
-    #message {
+    #time, #message {
       font-size: 22px;
       text-align: left;
     }
@@ -32,12 +32,16 @@
   <script>
     var time_span = $time_span;
     var text_time_span = "$text_time_span";
-    document.getElementById("time").innerText = "Sound an alarm in " + text_time_span + ".";
+    document.getElementById("time").innerText = "Sound an alarm in " + text_time_span;
     var message = "$message";
-    if (message)
+    if (message) {
       document.getElementById("message").innerText = message;
-    else
+      document.getElementById("time").innerText += ":";
+    } else {
       document.getElementById("message").outerHTML = "";
+      document.getElementById("time").innerText += ".";
+    }
   </script>
 </body>
 </html>
+
